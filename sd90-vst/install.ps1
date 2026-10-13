@@ -1,4 +1,4 @@
-# SD-90 VSTi を .vst3 バンドルの形に組む。
+# SD-90 の VST3 プラグインを .vst3 バンドルの形に組む。
 #
 # .vst3 は DLL 1 個ではなくフォルダ。中身は
 #   SD-90.vst3\Contents\x86_64-win\SD-90.vst3   <- 拡張子 .vst3 の DLL

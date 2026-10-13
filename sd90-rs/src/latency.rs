@@ -6,10 +6,10 @@
 //!
 //! 測り方は sd90-seq の render と同じ発想で、送出位置も観測位置も**デバイスの
 //! フレーム番号**で表す。ホストの時計は一切基準にしない。ついでにこの経路は
-//! VSTi がそのまま使う経路 (capture-only ストリーム + midisched) なので、
+//! VST3 プラグインがそのまま使う経路 (capture-only ストリーム + midisched) なので、
 //! ここが通れば Phase 0 の配線は通っている。
 //!
-//! 送出スレッドの誤差 (実測 0.1〜1.4ms) は `d` に混ざるが、VSTi でも同じ
+//! 送出スレッドの誤差 (実測 0.1〜1.4ms) は `d` に混ざるが、VST3 プラグインでも同じ
 //! スレッドが同じ仕事をする以上、混ざったままの値のほうが申告値として正しい。
 
 use crate::device::{BYTES_PER_SAMPLE, CHANNELS, FRAME_BYTES, PID_VENDOR, SAMPLE_RATE, Sd90};
@@ -118,7 +118,7 @@ impl Default for Opts {
 pub fn measure(opts: &Opts) -> Result<(), String> {
     let dev = Arc::new(Sd90::open(PID_VENDOR).map_err(|e| format!("SD-90 を開けない: {e}"))?);
     let shared = Arc::new(Shared::new(RING_FRAMES));
-    // VSTi と同じ構成。iso OUT は回さない。
+    // VST3 プラグインと同じ構成。iso OUT は回さない。
     let _stream =
         InputStream::start_cfg(shared.clone(), StreamCfg::capture_only(), Some(dev.clone()))?;
     let midi = UsbMidi::open_cable(dev.clone(), opts.cable).map_err(|e| e.to_string())?;

@@ -1,4 +1,4 @@
-//! ホストのふりをして VSTi の中身だけを回すプローブ。
+//! ホストのふりをして VST3 プラグインの中身だけを回すプローブ。
 //!
 //! DAW も VST3 SDK も無しに、「一定ブロックで `pull` し続けながら、
 //! ブロック相対のオフセットで MIDI を積む」という本番と同じ経路を叩く。
@@ -24,7 +24,7 @@ use std::time::{Duration, Instant};
 
 fn usage() {
     eprintln!(
-        r#"sd90-vst-probe — VSTi の中身をホスト無しで回す
+        r#"sd90-vst-probe — VST3 プラグインの中身をホスト無しで回す
 
   sd90-vst-probe [ms] [ブロック長] [out.wav] [B]
   sd90-vst-probe vst3test [dll] [ms] [ブロック長]

@@ -70,7 +70,7 @@ const OUT_SERVO_ALPHA: f64 = 0.001;
 /// ASIO ドライバは実測値が README にある構成のままにしてあるので既定は 8。
 #[derive(Clone, Copy)]
 pub struct StreamCfg {
-    /// iso OUT (IF0) を回すか。VSTi は音を送り込まないので false。
+    /// iso OUT (IF0) を回すか。VST3 プラグインは音を送り込まないので false。
     /// 回さなければ IF0 の alt を上げずに済み、フルスピードの帯域も食わない。
     pub playback: bool,
     /// IN: 1 転送あたりのパケット数 = ミリ秒数。
@@ -90,7 +90,7 @@ impl Default for StreamCfg {
 }
 
 impl StreamCfg {
-    /// VSTi 用。送出せず、時計を 1ms 粒度で刻む。先読みは 64ms のまま。
+    /// VST3 プラグイン用。送出せず、時計を 1ms 粒度で刻む。先読みは 64ms のまま。
     pub fn capture_only() -> Self {
         Self {
             playback: false,

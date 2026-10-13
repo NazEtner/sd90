@@ -1,5 +1,10 @@
 # sd90-vst
 
+<p>
+<img src="../assets/trademarks/asio-compatible.png" alt="ASIO Compatible" width="120">
+<img src="../assets/trademarks/vst-compatible.png" alt="VST Compatible" width="120">
+</p>
+
 
 
 EDIROL SD-90 を DAW から「ただのソフトシンセ」に見せる。
@@ -8,7 +13,7 @@ EDIROL SD-90 を DAW から「ただのソフトシンセ」に見せる。
 
 
 
-現状 SD-90 を DAW で使うには、ASIO で音を入れて / MIDI ポートを別途生やして /
+現状 SD-90 を DAW で使うには、ASIO® で音を入れて / MIDI ポートを別途生やして /
 
 トラックの遅延を手で合わせる、の 3 つを人間が繋ぐ必要がある。仮想 MIDI ポートを
 
@@ -42,7 +47,7 @@ DAW の MIDI イベント          RT スレッド          送出スレッド  
 
 
 
-iso OUT (IF0) は使わない。VSTi は音を送り込む必要がないので、`StreamCfg::capture_only`
+iso OUT (IF0) は使わない。VST® 3 プラグインは音を送り込む必要がないので、`StreamCfg::capture_only`
 
 で IF0 の alt を上げずに回す。
 
@@ -438,3 +443,10 @@ SD90_PROBE_RESET=-        GM System On を送らない
 | `src/control.rs` | プラグインとエディタで共有する状態と送信待ち |
 | `src/gui/` | `IPlugView`、Win32 + WGL のウィンドウ、egui の画面、画面の鍵盤 |
 
+## 商標
+
+ASIO is a registered trademark of Steinberg Media Technologies GmbH.
+VST is a registered trademark of Steinberg Media Technologies GmbH.
+Roland and EDIROL are trademarks of Roland Corporation.
+
+非公式のプロジェクトで、Steinberg とも Roland とも関係は無い。
