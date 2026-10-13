@@ -1,0 +1,54 @@
+[package]
+name = "sd90-vst"
+version = "0.1.0"
+edition = "2024"
+# VST3 の ABI は Steinberg SDK 3.8 由来で、3.8 から SDK 自体が MIT。
+license = "MIT"
+
+# SD-90 を DAW から見て「ただのソフトシンセ」にする。
+# MIDI 入力は IF2 の bulk、音声出力は IF1 の iso IN。
+# デバイスを触る層は sd90-rs 側にある。
+
+[lib]
+name = "sd90_vst"
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[[bin]]
+name = "sd90-vst-probe"
+path = "src/main.rs"
+
+# DAW 無しでエディタだけを使う単体版。
+[[bin]]
+name = "sd90-editor"
+path = "src/standalone.rs"
+
+[dependencies]
+# lib のターゲット名は sd90_asio だが、ここでは ASIO は関係ないので付け替える。
+sd90_rs = { path = "../sd90-rs", package = "sd90-rs" }
+
+# エディタ。ホストの HWND の下に子ウィンドウを作り、WGL の上で egui を描く。
+# winit / baseview は使わない (メッセージループはホストのものに乗る)。
+egui = { version = "0.29", default-features = false, features = ["default_fonts"] }
+egui_glow = { version = "0.29", default-features = false }
+glow = "0.14"
+
+[dependencies.windows]
+version = "0.61"
+features = [
+    "Win32_Foundation",
+    "Win32_System_LibraryLoader",
+    "Win32_Graphics_Gdi",
+    "Win32_Graphics_OpenGL",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_HiDpi",
+    # 単体版の音声出力 (WASAPI)。
+    "Win32_Media_Audio",
+    "Win32_Media_Multimedia",
+    "Win32_System_Com",
+    "Win32_System_Com_StructuredStorage",
+    "Win32_System_Threading",
+    "Win32_System_Variant",
+]
+

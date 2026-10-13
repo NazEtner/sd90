@@ -1,0 +1,19 @@
+[package]
+name = "sd90-seq"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+# SMF を SD-90 に流しながら、同じ USB で音を録るところまで。
+# デバイスを触る層は sd90-rs (ドライバ) 側にある。
+
+[[bin]]
+name = "sd90-seq"
+path = "src/main.rs"
+
+[dependencies]
+sd90-rs = { path = "../sd90-rs" }
+
+[dependencies.windows]
+version = "0.61"
+features = ["Win32_Foundation"]
