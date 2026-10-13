@@ -127,7 +127,7 @@ impl Sd90 {
         let path = paths.into_iter().next().ok_or_else(|| {
             windows::core::Error::new(
                 ERROR_FILE_NOT_FOUND.to_hresult(),
-                "SD-90 が見つからない (電源とモードスイッチ、Zadig の適用を確認)",
+                "SD-90 が見つからない (電源、SYSTEM の USB Driver = Vender、Zadig の適用を確認)",
             )
         })?;
         Self::open_path(&path)

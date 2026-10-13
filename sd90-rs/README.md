@@ -2,7 +2,6 @@
 
 <p>
 <img src="../assets/trademarks/asio-compatible.png" alt="ASIO Compatible" width="120">
-<img src="../assets/trademarks/vst-compatible.png" alt="VST Compatible" width="120">
 </p>
 
 EDIROL SD-90 (Roland Studio Canvas) を WinUSB 経由でユーザーモードから扱う。
@@ -175,12 +174,16 @@ DAW から音源を鳴らす以上、「いつ送ったか」が音楽的な精�
 (1ms 粒度) を使うこと。転送本数は 125/s から 1000/s に増えるが、OUT 側は元から
 1000/s で回しているので負荷の桁は変わらない。
 
-ASIO ドライバは README にある実測値がその構成で取られているので、既定は 8 の
-まま置いてある。
+ASIO ドライバは下の「ASIO ドライバ」節の実測値がその構成で取られているので、
+既定は 8 のまま置いてある。
 
 ## 準備
 
-1. 本体背面の USB モードスイッチを **Vendor** 側にして電源を入れる (PID 0x0016)。
+1. 本体パネルの [SYSTEM] → [PAGE] で 5 ページ目を出し、V1 で **USB Driver** を
+   **Vender** (マニュアル表記ママ) にして [ENTER]。同じ画面の 2 ページ目の
+   **MIDI Start Up** も **USB** にしておく (下の MIDI 節を参照)。
+   USB Driver の変更は次回電源投入から有効なので、電源を入れ直す (PID 0x0016)。
+   (Owner's Manual p.69-70, p.74。背面にモードスイッチは無い)
 2. [Zadig](https://zadig.akeo.ie/) で `EDIROL SD-90` に **WinUSB** を割り当てる。
    - Options → List All Devices
    - USB ID が `0582 0016` のものを選ぶ (`0017` は Generic モード側なので注意)
@@ -294,7 +297,7 @@ sd90-rs latency [回数] [ch] [note]  音源の応答 d を実測する
 - 24bit LE / 2ch と仮定したピークレベル (無音かどうか)
 - 先頭パケットの hex
 
-を出すので、上の「未解決点」2 つがこれ 1 本で判定できる。
+を出す。上の「実測で確定したこと」はこれで調べた。
 
 ## 構成
 
@@ -328,7 +331,8 @@ iso IN 8ms 分を回収 ---> 24bit 詰めのまま ---> bufferSize 溜まった�
 (連結以外の仕事をしない)   (16384 フレーム)      deinterleave + <<8         |
                                                                             | 出力を埋める
 iso OUT 1ms ずつ送出 <--- 24bit 詰めのまま <--- 同じフレーム数を畳む <-------+
-(EMA サーボで 47/48/49)   (助走 = bufferSize x2)  >>8 して interleave
+(EMA サーボで 47/48/49)   (助走 = bufferSize x2,  >>8 して interleave
+                           最低 1024)
 ```
 
 パケット長が揺れる以上、USB の到着単位を ASIO のバッファサイズに直接
