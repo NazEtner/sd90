@@ -2,8 +2,8 @@
 name = "sd90-vst"
 version = "0.1.0"
 edition = "2024"
-# VST3 の ABI は Steinberg SDK 3.8 由来で、3.8 から SDK 自体が MIT。
-license = "MIT"
+# VST3 の ABI は Steinberg SDK 3.8 (MIT) 由来。MIT は GPLv3 に取り込める。
+license = "GPL-3.0-only"
 
 # SD-90 を DAW から見て「ただのソフトシンセ」にする。
 # MIDI 入力は IF2 の bulk、音声出力は IF1 の iso IN。

@@ -2,7 +2,7 @@
 name = "sd90-seq"
 version = "0.1.0"
 edition = "2024"
-license = "MIT"
+license = "GPL-3.0-only"
 
 # SMF を SD-90 に流しながら、同じ USB で音を録るところまで。
 # デバイスを触る層は sd90-rs (ドライバ) 側にある。

@@ -278,7 +278,7 @@ sd90-rs latency [回数] [ch] [note]  音源の応答 d を実測する
 ```
 
 `latency` は既定で ch 10 (ドラム) の note 38 を 8 回鳴らし、送出フレームと
-オンセットの差を並べる。VST® 3 の申告レイテンシ `L = B + d` の `d` はこれで決める。
+オンセットの差を並べる。プラグイン ([`sd90-vst`](../sd90-vst)) の申告レイテンシ `L = B + d` の `d` はこれで決める。
 立ち上がりの遅い音色を指定するとアタックぶんが `d` に混ざるので、打楽器で測ること。
 
 `asiotest` は DllGetClassObject → クラスファクトリ → IASIO の全経路を、
@@ -341,7 +341,6 @@ iso OUT 1ms ずつ送出 <--- 24bit 詰めのまま <--- 同じフレーム数�
 ## 商標
 
 ASIO is a registered trademark of Steinberg Media Technologies GmbH.
-VST is a registered trademark of Steinberg Media Technologies GmbH.
 Roland and EDIROL are trademarks of Roland Corporation.
 
 非公式のプロジェクトで、Steinberg とも Roland とも関係は無い。

@@ -35,7 +35,7 @@ fn usage() {
     out.wav    出力の書き出し先 (32bit float, 既定 probe.wav)
     B          リングの目標滞留量フレーム (既定 ブロック長 + 96)
 
-前提: 本体を Vendor モード + Zadig で WinUSB。ASIO ドライバとは併用できない。
+前提: 本体を Vendor モード + Zadig で WinUSB。sd90-rs のドライバとは併用できない。
 "#
     );
 }

@@ -7,12 +7,12 @@
 EDIROL SD-90 を DAW から「ただのソフトシンセ」に見せる。
 デバイスを触る層は [`sd90-rs`](../sd90-rs) にある。
 
-現状 SD-90 を DAW で使うには、ASIO® で音を入れて / MIDI ポートを別途生やして /
+現状 SD-90 を DAW で使うには、オーディオドライバで音を入れて / MIDI ポートを別途生やして /
 トラックの遅延を手で合わせる、の 3 つを人間が繋ぐ必要がある。仮想 MIDI ポートを
 足しても、いちばん面倒な**手動のレイテンシ合わせ**は残る。
 
 MIDI 入力と音声出力を 1 個のプラグインに封じ込めれば、遅延の申告はプラグインの
-仕事になり、位置合わせはホストの PDC がやる。ASIO ドライバも仮想 MIDI ポートも
+仕事になり、位置合わせはホストの PDC がやる。専用のオーディオドライバも仮想 MIDI ポートも
 要らなくなる。
 
 ```
@@ -78,7 +78,7 @@ cargo build --release      ルートの target\release\sd90-editor.exe ができ
 プラグインのリサンプラが吸う。最大ブロックを 512 にしているので申告レイテンシは
 770 フレーム (16ms)。出力デバイスが無ければタイマで回し、音は本体の端子だけになる。設定は
 `%APPDATA%\sd90-vst\standalone.state` に残り、次に開いたときに本体へ送り直す。
-ASIO ドライバや DAW の中のプラグインとは同時に使えない (掴めなければ OFFLINE で開く)。
+[`sd90-rs`](../sd90-rs) のドライバや DAW の中のプラグインとは同時に使えない (掴めなければ OFFLINE で開く)。
 
 ### 画面の鍵盤
 
@@ -117,8 +117,8 @@ WNDPROC が宙に浮く)。GL のコンテキストは描く間だけ current �
 
 ### ライセンス
 
-MIT。VST3 の ABI 宣言 (`src/vst3/`) は `vst3_pluginterfaces` 3.8.1 から起こしたもので、
-SDK は 3.8 から MIT なので他のクレートとそろえられる。Steinberg の著作権表示は
+GPL-3.0 (ワークスペース共通)。VST3 の ABI 宣言 (`src/vst3/`) は `vst3_pluginterfaces` 3.8.1
+から起こしたもので、SDK は 3.8 から MIT なので GPL に取り込める。Steinberg の著作権表示は
 `src/vst3/mod.rs` の頭に置いてある。
 
 ## レイテンシの決め方
@@ -212,8 +212,8 @@ setupProcessing(44.1kHz): 正しく断った
 ```
 
 DAW も VST3 SDK も無しに、「一定ブロックで `pull` し続けながら、ブロック相対の
-オフセットで MIDI を積む」という本番と同じ経路を叩く。ASIO ドライバに対する
-`sd90-rs asiotest` と同じ役割。
+オフセットで MIDI を積む」という本番と同じ経路を叩く。`sd90-rs` 側の
+ドライバ自己検証と同じ役割。
 
 鳴らす中身は環境変数で差し替えられる:
 
@@ -246,7 +246,7 @@ SD90_PROBE_RESET=-        GM System On を送らない
 ## 前提
 
 * 本体を Vendor モード (PID 0x0016) + Zadig で WinUSB
-* **ASIO ドライバとは併用できない。** どちらも IF1 の iso IN を要求する
+* **`sd90-rs` のドライバとは併用できない。** どちらも IF1 の iso IN を要求する
 * 音を出せるのはプロセス内で 1 インスタンスだけ (録音バスが物理的に 1 系統)
 
 ## 構成
@@ -271,7 +271,6 @@ SD90_PROBE_RESET=-        GM System On を送らない
 
 ## 商標
 
-ASIO is a registered trademark of Steinberg Media Technologies GmbH.
 VST is a registered trademark of Steinberg Media Technologies GmbH.
 Roland and EDIROL are trademarks of Roland Corporation.
 

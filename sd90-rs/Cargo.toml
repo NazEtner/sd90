@@ -2,7 +2,7 @@
 name = "sd90-rs"
 version = "0.1.0"
 edition = "2024"
-license = "MIT"
+license = "GPL-3.0-only"
 
 # ASIO ドライバは in-proc COM サーバなので DLL で吐く。
 # rlib も出しておいて、プローブ binary から同じコードを使う。

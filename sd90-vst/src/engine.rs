@@ -87,7 +87,7 @@ impl Engine {
 
     fn open(safety: usize) -> Result<Engine, String> {
         let dev = Arc::new(Sd90::open(PID_VENDOR).map_err(|e| {
-            format!("SD-90 を開けない ({e})。Vendor モードと Zadig の適用、ASIO ドライバとの併用を確認すること")
+            format!("SD-90 を開けない ({e})。Vendor モードと Zadig の適用、sd90-rs のドライバとの併用を確認すること")
         })?);
         // MIDI はストリームより先に開くこと。`open_cable` は IF2 の alt を設定
         // し直す (SET_INTERFACE) が、WinUSB は IF1 に iso 転送が出ている間の
