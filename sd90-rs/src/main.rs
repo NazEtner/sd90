@@ -31,7 +31,7 @@ fn usage() {
                                      既定 8 回 / ch 10 (ドラム) / note 38
 
 前提:
-  * 本体の USB モードスイッチを Vendor 側にして電源を入れる (PID 0x0016)
+  * 本体の SYSTEM で USB Driver を Vender にして電源を入れ直す (PID 0x0016)
   * Zadig で PID 0x0016 に WinUSB を割り当てる
 "#
     );
@@ -47,7 +47,7 @@ fn open_any() -> windows::core::Result<Sd90> {
             {
                 eprintln!(
                     "PID 0x0017 (Generic モード) が見つかった。\n\
-                     モードスイッチを Vendor 側にして電源を入れ直すこと。"
+                     本体の SYSTEM で USB Driver を Vender にして電源を入れ直すこと。"
                 );
             }
             Err(e)

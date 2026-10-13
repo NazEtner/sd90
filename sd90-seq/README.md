@@ -39,6 +39,6 @@ MIDI は IF2 の bulk、音は IF1 の iso。どちらも同じデバイスな�
 
 ## 前提
 
-* SD-90 の MIDI StartUp = USB、背面スイッチは Vendor、Zadig で WinUSB
+* SD-90 の MIDI StartUp = USB、SYSTEM の USB Driver は Vender、Zadig で WinUSB
 * 音源が無反応になったら Native On (`F0 41 10 00 48 12 00 00 00 00 00 00 F7`)
   を送るか本体を入れ直す。理由は sd90-rs の README を参照
