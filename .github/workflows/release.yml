@@ -1,0 +1,135 @@
+# Windows x64 向けの成果物を windows-latest でビルドする。
+# Linux から cargo-xwin でクロスビルドする案は、MSVC CRT / Windows SDK の
+# ダウンロードが CI 上で毎回止まってしまうので諦めた。
+#
+#   PR / main への push  … ビルドして zip を Actions の artifact に置くだけ
+#   v* タグの push       … それに加えて GitHub Release を作る (v0.* と v*-* は pre-release)
+
+name: release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET: x86_64-pc-windows-msvc
+  # 利用者に VC++ 再頒布可能パッケージを要求しないよう、CRT は静的リンク。
+  RUSTFLAGS: -C target-feature=+crt-static
+
+# 同じ PR に push し直したら古い方は止める。
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      name: ${{ steps.pkg.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ env.TARGET }}
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Check tag matches crate versions
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          want="${GITHUB_REF_NAME#v}"
+          want="${want%%-*}"
+          cargo metadata --no-deps --format-version 1 \
+            | jq -r '.packages[] | "\(.name) \(.version)"' \
+            | while read -r name ver; do
+                if [ "$ver" != "$want" ]; then
+                  echo "::error::$name は $ver で、タグ $GITHUB_REF_NAME と合わない"
+                  exit 1
+                fi
+              done
+
+      - name: Build
+        run: cargo build --release --workspace --target "$TARGET"
+
+      # crt-static が効いていれば VCRUNTIME140.dll などは import に出てこない。
+      # llvm-readobj は runner に入っている LLVM のもの。
+      - name: Check CRT is static
+        run: |
+          export PATH="/c/Program Files/LLVM/bin:$PATH"
+          out="target/$TARGET/release"
+          for f in "$out"/*.dll "$out"/*.exe; do
+            if llvm-readobj --coff-imports "$f" | grep -iE 'Name: (vcruntime|msvcp|api-ms-win-crt)'; then
+              echo "::error::$f が CRT の DLL を import している"
+              exit 1
+            fi
+          done
+
+      - name: Package
+        id: pkg
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then ver="$GITHUB_REF_NAME"; else ver="$(git rev-parse --short HEAD)"; fi
+          name="sd90-$ver-windows-x64"
+          out="target/$TARGET/release"
+          dir="dist/$name"
+
+          mkdir -p "$dir/SD-90.vst3/Contents/x86_64-win"
+          cp "$out/sd90_asio.dll" "$out/sd90-rs.exe" "$out/sd90-seq.exe" \
+             "$out/sd90-editor.exe" "$out/sd90-vst-probe.exe" "$dir/"
+          # .vst3 はフォルダ。中の DLL も拡張子 .vst3 (install.ps1 と同じ形)。
+          cp "$out/sd90_vst.dll" "$dir/SD-90.vst3/Contents/x86_64-win/SD-90.vst3"
+          cp LICENSE README.md "$dir/"
+
+          # windows runner には zip コマンドが無いので 7-Zip で固める。
+          (cd dist && 7z a -tzip "$name.zip" "$name")
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pkg.outputs.name }}
+          path: dist/${{ steps.pkg.outputs.name }}.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.name }}
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NAME: ${{ needs.build.outputs.name }}
+        run: |
+          cat > notes.md <<'EOF'
+          Windows x64 向けのビルドです。
+
+          * 事前に SD-90 を Vendor モードにし、Zadig で WinUSB を割り当ててください ([手順](https://github.com/NazEtner/sd90/blob/main/sd90-rs/README.md#準備))。
+          * ASIO ドライバは `regsvr32 sd90_asio.dll` で登録します。
+          * `SD-90.vst3` フォルダを `C:\Program Files\Common Files\VST3` にコピーすると、DAW から読み込めます。
+          * コード署名をしていないため、初回の実行時に SmartScreen の警告が出ることがあります。
+          EOF
+
+          flags=()
+          case "$GITHUB_REF_NAME" in v0.*|*-*) flags+=(--prerelease) ;; esac
+
+          gh release create "$GITHUB_REF_NAME" "$NAME.zip" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file notes.md \
+            --generate-notes \
+            "${flags[@]}"

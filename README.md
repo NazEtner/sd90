@@ -18,7 +18,8 @@ EDIROL SD-90 (Roland Studio Canvas) を、現行の Windows x64 で WinUSB 経�
 cargo build --release
 ```
 
-成果物はルートの `target\release` に出力されます。事前準備 (Vendor モードへの切り替えと Zadig での WinUSB の割り当て) は
+成果物はルートの `target\release` に出力されます。ビルド済みのものは
+[Releases](https://github.com/NazEtner/sd90/releases) からも入手できます。事前準備 (Vendor モードへの切り替えと Zadig での WinUSB の割り当て) は
 [`sd90-rs` の README](sd90-rs/README.md#準備) を参照してください。
 
 ## ライセンス
