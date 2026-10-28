@@ -52,6 +52,7 @@ jobs:
           want="${want%%-*}"
           cargo metadata --no-deps --format-version 1 \
             | jq -r '.packages[] | "\(.name) \(.version)"' \
+            | tr -d '\r' \
             | while read -r name ver; do
                 if [ "$ver" != "$want" ]; then
                   echo "::error::$name は $ver で、タグ $GITHUB_REF_NAME と合わない"
